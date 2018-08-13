@@ -16,6 +16,6 @@ setup(
     author_email='kaplan@uwm.edu',
     packages=['ztf_tiling','ztf_tiling.data'],
     #url = 'https://github.com/MatteoGiomi/dataslicer',
-    install_requires=['numpy','healpy','astropy'],
+    install_requires=['numpy','astropy'],
     data_files=[('ztf_tiling/data/',glob.glob('data/*.dat'))],
     )

@@ -21,7 +21,6 @@ from astropy import constants as c, units as u
 from astropy.coordinates import SkyCoord
 from astropy.wcs import WCS
 import astropy
-import healpy
 import os
 from . import data
 
@@ -302,6 +301,12 @@ class ZTFtile:
         """
         _inside(RA,Dec)
         returns whether a given RA,Dec (floats in degrees) is inside the FOV
+
+        returns an integer for each coordinate.
+        This will be 0 if it is not inside.  Otherwise it will map to the quadrant:
+        n=4*(CCD-1)+Quadrant
+        with CCD=[1,..16]
+        and Quadrant=[1,..4]
         """
         on=np.zeros_like(RA,dtype=np.int64)
         for i in range(len(self._wcs)):
@@ -340,6 +345,12 @@ class ZTFtile:
         coordinate can be SkyCoord
         or separate RA,Dec
         RA,Dec can be Quantity (with units) or floats (in degrees)
+
+        returns an integer for each coordinate.
+        This will be 0 if it is not inside.  Otherwise it will map to the quadrant:
+        n=4*(CCD-1)+Quadrant
+        with CCD=[1,..16]
+        and Quadrant=[1,..4]
         """
 
         if len(args)==1:
@@ -397,12 +408,14 @@ class HP_coverage:
         input healpix file and desired nside for degradation (if needed)
         """
 
+        import healpy
+
         self.nside=nside
         self.npix=healpy.nside2npix(self.nside)
 
         # read the healpix map
         try:
-            b,h=healpy.read_map(hpfile,h=True,nest=False,verbose=verbose)
+            b,h=healpy.read_map(hpfile,h=True,nest=False)
         except IOError:
             raise IOError('Unable to read healpix file %s' % hpfile)
         
@@ -410,13 +423,9 @@ class HP_coverage:
         h={x[0]: x[1] for x in h}
         self.nside_in=h['NSIDE']
         self.npix_in=healpy.nside2npix(self.nside_in)
-        if verbose:
-            print('Read %s with NSIDE=%d' % (hpfile, self.nside_in))
 
         # degrade if necessary
         if self.nside < self.nside_in:
-            if verbose:
-                print('Converting to NSIDE=%d' % self.nside)
             self.hpmap=healpy.ud_grade(b, self.nside, power=-2)
         else:
             self.hpmap=b
@@ -529,4 +538,5 @@ class HP_coverage:
         area=percentile_area(level)
         determines the area of the map above which there is level of total probabiilty        
         """
+        
         return (self.hpmap>=self.percentile(level)).sum()*healpy.nside2pixarea(self.nside,degrees=True)*u.deg**2
