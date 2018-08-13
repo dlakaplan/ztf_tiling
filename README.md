@@ -56,3 +56,28 @@ Note that this will appear a bit blotchy toward the edges becase of the coarse p
 
 ## Update quadrant centers (e.g., if the detector is re-shimmed)
 There are two scripts in `utils/`.  One will download a bunch of metadata using [ZTFQuery](https://github.com/MickaelRigault/ztfquery) for different tiles at different Decs (`utils/get_tiledata.py`) and write `csv` files with the results.  The second (`utils/write_quadrantoffsets.py`) will write a new quadrants offset file that can be placed in `data/`.  Note that this isn't done automatically, and the location of the quadrant offset file in `ztf_tiling/ztf_tiling.py` also needs to be changed.  
+
+## Look at actual positions using ZTFQuery results
+```python
+from ztfquery import query
+zquery = query.ZTFQuery()
+
+from ztf_tiling import ztf_tiling
+
+zquery.load_metadata(sql_query='ccdid=1 and field=720 and qid=3 and filefracday=20180802305347')
+# convert the results (should only be one in this case, else returns a list of WCS objects) to WCS
+w=ztf_tiling.metadata2wcs(zquery.metatable)
+# calculate footprint.  3072x3080 is the size of a quadrant in pixels
+footprint=w.calc_footprint(axes=(3072,3080))
+
+from astropy.coordinates import SkyCoord
+from astropy import units as u
+
+# pick a position (in this case the center):
+c=SkyCoord(229.6432834462*u.deg,  37.23028328539*u.deg)
+
+# check if it is on the quadrant.
+# note that the second position needs to be an array/list also, so make it one
+print(ztf_tiling.inside(footprint[:,0],footprint[:,1],[c.ra.value],[c.dec.value]))
+# this should return True
+
