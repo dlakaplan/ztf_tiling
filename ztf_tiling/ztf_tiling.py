@@ -109,7 +109,7 @@ def metadata2wcs(metadata):
     """
     w=[]
     for i in range(len(metadata)):
-        w.append(naxis=2)
+        w.append(WCS(naxis=2))
         w[-1].wcs.ctype=['RA---TAN','DEC--TAN']
         w[-1].wcs.crval=[metadata['crval1'][i],metadata['crval2'][i]]
         w[-1].wcs.crpix=[metadata['crpix1'][i],metadata['crpix2'][i]]
