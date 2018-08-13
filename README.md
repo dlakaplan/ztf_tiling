@@ -1,5 +1,7 @@
 # ztf_tiling
 
+**Note**: unlikely to work for Dec>80deg since part of the tile will come close to wrapping over the pole.
+
 ## Data:
 data sources (in `data/`):
  * `ztf_fields.txt`: list of ZTF field centers for primary and secondary grids.  From XXX?
