@@ -91,9 +91,9 @@ def get_tile(number, missing=None):
     return a ZTFtile object corresponding to the number in the tile grid
     """
     try:
-        tiles=Table.read(os.path.join(data._datadir,'ztf_fields.dat'),format='ascii.commented_header')
+        tiles=Table.read(data._tilelist,format='ascii.commented_header')
     except IOError:
-        raise IOError('Unable to read ZTF field file %s' % os.path.join(data._datadir,'ztf_fields.dat'))
+        raise IOError('Unable to read ZTF field file %s' % data._tilelist)
     try:
         return ZTFtile(tiles[number]['RA']*u.deg,tiles[number]['Dec']*u.deg,number=number,missing=missing)
     except IndexError:
@@ -123,12 +123,11 @@ def metadata2wcs(metadata):
 ##################################################
 class ZTFtile:
 
-    _quadrantcenters='ZTF_quadrantcenters_20180813.dat'
     # make sure it can find the table of quadrant centers
     try:
-        t=Table.read(os.path.join(data._datadir,_quadrantcenters),format='ascii.commented_header')
+        t=Table.read(data._quadrantcenters,format='ascii.commented_header')
     except IOError:
-        raise IOError('Unable to read ZTF quadrant center file %s' % os.path.join(data._datadir,_quadrantcenters))
+        raise IOError('Unable to read ZTF quadrant center file %s' % data._quadrantcenters)
     # Cartesian coordinates in the plane of projection
     quadrant_x=t['DX']*u.deg
     quadrant_y=t['DY']*u.deg
@@ -478,47 +477,6 @@ class HP_coverage:
             values[itile]=hpmap[ztftiles[itile].inside(self.RA,self.Dec)].sum()
         return values
     
-    def find_tiles(self, ztftiles, probability_target=0.9, verbose=False):
-        """
-        tiles,probability=find_tiles(ztftiles, probability_target=0.9, verbose=False)
-
-        give ztftiles (list of ZTFtile objects())
-
-        will find the combination to achieve the total probability target
-        """
-
-        # starting values and order
-        tile_values=self.get_tile_values(self.hpmap, ztftiles)
-        tile_order=np.argsort(tile_values)[::-1]
-
-        tiles=[]
-        # this is a copy of the map that we can modify
-        hpmapc=np.copy(self.hpmap)
-        covered=np.zeros(len(self.hpmap),dtype=np.bool)
-        summed_probability=0
-        while summed_probability < probability_target and len(tiles)<len(ztftiles):
-            # add it to the list
-            tiles.append(tile_order[0])
-
-            individual_prob=(hpmapc[ztftiles[tile_order[0]].inside(self.RA,self.Dec)].sum())
-            if verbose:
-                print('Adding tile %d (%f,%f): individual probability = %.3f, total probability = %.3f' % (tile_order[0],
-                                                                                                           ztftiles[tile_order[0]].RA.value,
-                                                                                                           ztftiles[tile_order[0]].Dec.value,
-                                                                                                           individual_prob,
-                                                                                                           summed_probability+individual_prob))
-            covered[ztftiles[tile_order[0]].inside(self.RA,self.Dec)]=True
-            summed_probability+=individual_prob
-            hpmapc[ztftiles[tile_order[0]].inside(self.RA,self.Dec)]=0
-                
-            # redo the priorities to account for the new 
-            # probability values
-            tile_values=self.get_tile_values(hpmapc, 
-                                             ztftiles)
-            # priorities for each of those
-            tile_order=np.argsort(tile_values)[::-1]
-
-        return tiles,summed_probability
 
     def percentile(self, level):
         """
