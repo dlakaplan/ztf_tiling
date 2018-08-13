@@ -52,4 +52,5 @@ hp.mollview(on,rot=(Z.RA.value,Z.Dec.value,0),xsize=4000)
 ```
 Note that this will appear a bit blotchy toward the edges becase of the coarse pixelization.
 
-
+## Update quadrant centers (e.g., if the detector is re-shimmed)
+There are two scripts in `utils/`.  One will download a bunch of metadata using [ZTFQuery](https://github.com/MickaelRigault/ztfquery) for different tiles at different Decs (`utils/get_tiledata.py`) and write `csv` files with the results.  The second (`utils/write_quadrantoffsets.py`) will write a new quadrants offset file that can be placed in `data/`.  Note that this isn't done automatically, and the location of the quadrant offset file in `ztf_tiling/ztf_tiling.py` also needs to be changed.  
