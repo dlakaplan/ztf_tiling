@@ -19,7 +19,7 @@ from astropy.wcs import WCS
 from astropy.io import fits
 import astropy.wcs
 
-tiles=Table.read(os.path.join(ztf_tiling.data._datadir,'ztf_fields.dat'),format='ascii.commented_header')
+tiles=Table.read(ztf_tiling.data._tilelist,format='ascii.commented_header')
 # only set 1
 tiles=tiles[:np.argmin(np.diff(tiles['Dec']))+1]
 
