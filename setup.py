@@ -15,7 +15,8 @@ setup(
     author='David Kaplan',
     author_email='kaplan@uwm.edu',
     packages=['ztf_tiling','ztf_tiling.data'],
-    #url = 'https://github.com/MatteoGiomi/dataslicer',
+    #scripts=glob.glob('scripts/*.py'),
+    url = 'https://github.com/dlakaplan/ztf_tiling',
     install_requires=['numpy','astropy'],
     data_files=[('ztf_tiling/data/',glob.glob('data/*.dat'))],
     )

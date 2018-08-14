@@ -381,6 +381,14 @@ class ZTFtile:
                 return self._inside_nogaps(args[0],args[1])
 
     def region(self, filename, color='green'):
+        """
+        region(filename, color='green')
+
+        if filename is not None, will write a ds9 region file for the current tile
+        in any case will return the region file as a string        
+
+        """
+
         s="icrs;point(%s,%s) # point=diamond text={Center} color={%s}\n" % (self.RA.value,self.Dec.value,color)        
         
         for i in range(len(self._wcs)):
