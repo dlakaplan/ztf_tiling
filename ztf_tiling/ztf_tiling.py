@@ -21,7 +21,7 @@ from astropy import constants as c, units as u
 from astropy.coordinates import SkyCoord
 from astropy.wcs import WCS
 import astropy
-import os
+import os,warnings
 from . import data
 
 ##################################################
@@ -168,6 +168,10 @@ class ZTFtile:
             self.Dec=Dec
         else:
             self.Dec=Dec*u.deg
+
+        if np.abs(self.Dec)>80*u.deg:
+            warnings.warn('ZTFtile is not supported for |Dec|>80deg; use caution')
+
         assert rotation.lower() in ['model','none',None]
         self.rotation=rotation.lower()
 
