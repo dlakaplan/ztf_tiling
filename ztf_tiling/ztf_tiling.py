@@ -35,7 +35,7 @@ def inside(X,Y,x0,y0):
     result=inside(X,Y,x0,y0)
     see if the points (x0,y0) is inside the convex polygon defined by (X,Y)
     X,Y and x0,y0 should be 1D arrays
-    (X,Y) should be in order, but can be clockwise or counter-clockwise
+    (X,Y) should be in order, must be clockwise
     based on:
     http://demonstrations.wolfram.com/AnEfficientTestForAPointToBeInAConvexPolygon/
     """
@@ -50,13 +50,11 @@ def inside(X,Y,x0,y0):
     Y=Y-np.array([y0]).T
     n=X.shape[1]
     aplus=np.ones((X.shape[0]),dtype=np.bool)
-    aminus=np.ones((X.shape[0]),dtype=np.bool)
     for i1 in range(n):
         i2=(i1+1) % n
         a=X[:,i2]*Y[:,i1]-X[:,i1]*Y[:,i2]
         aplus=aplus & (a>0)
-        aminus=aminus & (a<0)
-    return aplus | aminus
+    return aplus
 
 
 ##################################################
