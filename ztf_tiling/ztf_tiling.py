@@ -184,7 +184,7 @@ class ZTFtile:
         self.missing_quadrants=[]
         if missing is not None and len(missing)>0:
             for m in missing:
-                if isinstance(m,int) or len(m)==1:
+                if isinstance(m,(np.integer,int)) or len(m)==1:
                     # assume this is 0 origin
                     self.missing_quadrants.append(m)
                 elif len(m)==2:
